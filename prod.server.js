@@ -77,7 +77,7 @@ if(dev){
     });
 } else {
     //生成服务端
-    app.use(express.static('./dist'))  //设置目录
+    app.use(express.static('./'))  //设置目录
     let port = process.env.PORT || 2000
 
     module.exports = app.listen(port,(err)=>{

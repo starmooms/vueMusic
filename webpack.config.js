@@ -37,7 +37,7 @@ module.exports = (env,argv) => {
     console.log(argv.mode+"!!!!");
 
     const dev = argv.mode === "development"?true:false;
-    const publicPath = dev?"/":"/";
+    const publicPath = dev?"/":"/dist/";
     dev?devServerUrl():null; //设置端口号
  
     const config = {
@@ -145,7 +145,7 @@ module.exports = (env,argv) => {
             　　filename: "css/[name]-[contenthash:8].css"
             }),
             new htmlWebpackPlugin({
-                filename : "index.html",
+                filename : dev ? "index.html" : path.resolve(__dirname,'index.html'),
                 title : "Music Demo",
                 template : "./src/template.html"
             })
@@ -154,7 +154,7 @@ module.exports = (env,argv) => {
 
     if(!dev){
         let buildPlugins = [
-            new cleanWebpackPlugin(['dist']),
+            new cleanWebpackPlugin(['dist','./index.html']),
         ]
         config.output.filename = "js/[name]-[chunkhash:8].js"
         config.output.chunkFilename = "js/[name]-[chunkhash:8].js"
