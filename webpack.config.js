@@ -37,7 +37,7 @@ module.exports = (env,argv) => {
     console.log(argv.mode+"!!!!");
 
     const dev = argv.mode === "development"?true:false;
-    const publicPath = dev?"/":"/dist/";
+    const publicPath = dev?"/":"./dist/";
     dev?devServerUrl():null; //设置端口号
  
     const config = {

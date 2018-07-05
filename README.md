@@ -1,5 +1,5 @@
 # Vue + webpack4 搭建音乐播放器 (开发中....)
-http://starmooms.github.io/vueMusic/dist/index.html
+https://starmooms.github.io/vueMusic/
 
 ### 数据来源
 数据来自qq音乐，大部分接口是`JSONP`抓取交易，少部分接口限制了`host`，不能直接抓取。通过`express`和`axios`代理设置`header`，绕过`host`限制。PS：具体看`prod.server.js`文件。
