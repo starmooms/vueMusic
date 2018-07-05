@@ -77,7 +77,6 @@ import { mapMutations } from "vuex"
                         this.dataList = res.data.list;
                     }
                 },data =>{
-                    console.log(data)
                     this.dataList = data
                 })
             },

@@ -1,7 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import axios from "axios";
 import { _normalizeSongs } from "../js/util.js"; //工具函数 用于筛选数据生成song对象
 
 Vue.use(Vuex);

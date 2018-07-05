@@ -20,7 +20,8 @@
                         :sets = 'scrollSets'
                         @scroll = "scrollAct"
                 >
-                    <songList></songList>
+                    <songList v-if="songList.length"></songList>
+                    <loading v-else="!songList.length"></loading>
                 </scroll>
             </div>
         </div>
@@ -29,19 +30,20 @@
 
 <script>
 import scroll from "./scroll";
-import songList from "./songList"
+import songList from "./songList";
+import loading from "./loading";
 import { mapState } from "vuex";
 
 
 export default {
-    components:{ scroll,songList },
+    components:{ scroll,songList,loading },
     data(){
         return {
             scrollSets:{
                 listenScroll: true,
                 probeType: 3
             },
-            scrollY: 0,
+            scrollY: 0
         }
     },
     mounted() {
