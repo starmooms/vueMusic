@@ -15,7 +15,9 @@
                 <p class="singer">{{ actSong.singer }}</p>
             </div>
             <div class="full-center">
-                <div class="img-box" :class="{ ani:playing }">
+                <div class="img-box" 
+                    :class="{ anistop:!playing }"
+                >
                     <img class="song-image" :src="actSong.image">
                 </div>
             </div>
@@ -50,14 +52,17 @@
             @click = "open"
         >
             <div class="play-img">
-                <img :src="actSong.image">
+                <img :src="actSong.image"
+                    :class="{ anistop:!playing }">
             </div>
             <div class="play-msg">
                 <p class="name">{{ actSong.name }}</p>
                 <p class="disc">{{ actSong.singer }}</p>
             </div>
             <div class="play-control">
-                <div class="btn-box" @click="togglePlaying">
+                <div class="btn-box" 
+                    @click.stop = "togglePlaying"
+                >
                     <svg class="progress-svg" width="32" height="32" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
                         <circle class="progress-bg" r="50" cx="50" cy="50" fill="transparent"></circle>
                         <circle class="progress-length" r="50" cx="50" cy="50" fill="transparent"
@@ -251,9 +256,9 @@ export default {
                     margin: 0 auto;
                     max-width: 600px;
                     max-height: 600px;
-                    animation-fill-mode: backwards;
-                    &.ani{
-                        animation:rotate 20s linear infinite backwards;
+                    animation:rotate 20s linear infinite both;
+                    &.anistop{
+                        animation-play-state:paused;
                     }
                     .song-image{
                         // position: absolute;
@@ -344,6 +349,10 @@ export default {
                     width: 40px;
                     height: 40px;
                     border-radius: 50%;
+                    animation:rotate 20s linear infinite both;
+                    &.anistop{
+                        animation-play-state:paused;
+                    }
                 }
             }
             .play-msg{
