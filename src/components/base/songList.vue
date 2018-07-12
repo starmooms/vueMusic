@@ -1,18 +1,25 @@
 <template>
     <ul class="song-list">
-        <li class="song-item" v-for = "item in songList">
+        <li class="song-item" 
+            v-for = "(item,index) in songList"
+            :key = "item.key"
+            @click = "selectPlay({list:songList,index})"
+        >
             <p class="name">{{ item.name }}</p>
-            <p class="singer">{{ item.singer }}</p>
+            <p class="singer">{{ item.singer+'·'+item.album }}</p>
         </li>
     </ul>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState,mapActions } from 'vuex'
 
 export default{
     computed : {
         ...mapState(['songList'])
+    },
+    methods:{
+        ...mapActions(['selectPlay'])
     }
 }
 </script>

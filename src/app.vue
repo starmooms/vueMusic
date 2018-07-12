@@ -4,12 +4,14 @@
         <keep-alive>
             <router-view></router-view>
         </keep-alive>
+        <player></player>
     </div>
 </template>
 
 <script>
 import slider from './components/base/slider'
 import vHeader from './components/vHeader'
+import player from './components/player'
     export default {
         data () {
             return {
@@ -17,7 +19,7 @@ import vHeader from './components/vHeader'
                 a : "d",
             }
         },
-        components:{ slider,vHeader },
+        components:{ slider,vHeader,player },
     }
 </script>
 

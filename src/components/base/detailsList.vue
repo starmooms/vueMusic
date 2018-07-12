@@ -47,10 +47,15 @@ export default {
         }
     },
     mounted() {
-        this.$nextTick(()=>{
+        // this.$nextTick().then(()=>{
+        //     if(! this.$refs.bgImage) return
+        //     this.imageHeight = this.$refs.bgImage.clientHeight
+        //     console.log(this.imageHeight)
+        // })
+        setTimeout(()=>{
             if(! this.$refs.bgImage) return
             this.imageHeight = this.$refs.bgImage.clientHeight
-        })
+        },20)
     },
     computed:{
         ...mapState(['disc','songList']),
