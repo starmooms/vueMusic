@@ -1,58 +1,76 @@
 <template>
-    <div class="player" v-show="actSong">
+    <div class="player" v-if="actSong">
         <!-- 播放全屏页面 -->
-        <div class="page-player" v-show="fullScreen">
-            <div class="full-bg">
-                <img :src="actSong.image">
-            </div>
-            <div class="full-top">
-                <div class="back">
-                    <a href="javascript:;" class="back-btn" @click="back">
-                        <i class="iconfont ico-back"></i>
-                    </a>
+        <transition name="fullscreenani" >
+            <div class="page-player" v-show="fullScreen">
+                <div class="full-bg">
+                    <img :src="actSong.image">
                 </div>
-                <p class="name">{{ actSong.name }}</p>
-                <p class="singer">{{ actSong.singer }}</p>
-            </div>
-            <div class="full-center">
-                <div class="img-box" 
-                    :class="{ anistop:!playing }"
-                >
-                    <img class="song-image" :src="actSong.image">
+                <div class="full-top">
+                    <div class="back">
+                        <a href="javascript:;" class="back-btn" @click="back">
+                            <i class="iconfont ico-back"></i>
+                        </a>
+                    </div>
+                    <p class="name">{{ actSong.name }}</p>
+                    <p class="singer">{{ actSong.singer }}</p>
                 </div>
-            </div>
-            <div class="full-bottom">
-                <div class="progress-box">
-                    <span class="time">--:--</span>
-                    <div class="progress-container"
-                        ref = "progress"
-                        @touchstart.parent = "progressTouchStart"
-                        @touchmove.parent = "progressTouchMove"
-                        @touchend = "progressTouchEnd"
+                <div class="full-center">
+                    <div class="cd-wrapper">
+                        <div class="img-box" 
+                            :class="{ anistop:!playing }"
                         >
-                        <div class="progress">
-                            <div class="progress-length"
-                                :style= "{ width: progressPrecent * 100 + '%'}">
-                                <div class="progress-btn-box"></div>
-                            </div>
+                            <img class="song-image" alt="" :src="actSong.image">
                         </div>
                     </div>
-                    <span class="time time-r">--:--</span>
                 </div>
-                <div class="control">
-                    <a class="control-play" href="javascript:;"
-                        @click = "togglePlaying">
-                        <i class="iconfont" :class = "icofull"></i>
-                    </a>
+                <div class="full-bottom">
+                    <div class="progress-box">
+                        <span class="time">{{ currentTime | forTime }}</span>
+                        <div class="progress-container"
+                            ref = "progress"
+                            @touchstart.parent = "progressTouchStart"
+                            @touchmove.parent = "progressTouchMove"
+                            @touchend = "progressTouchEnd"
+                            >
+                            <div class="progress">
+                                <div class="progress-length"
+                                    :style= "{ width: progressPrecent * 100 + '%'}">
+                                    <div class="progress-btn-box"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="time time-r">{{ actSong.duration | forTime }}</span>
+                    </div>
+                    <div class="control">
+                        <a class="control-i-box" href="javascript:;">
+                            <i class="iconfont ico-sequence" ></i>
+                        </a>
+                        <a class="control-i-box" href="javascript:;"
+                        @click = "prevSong" >
+                            <i class="iconfont ico-next ico-prev" ></i>
+                        </a>
+                        <a class="control-i-box" href="javascript:;"
+                            @click = "togglePlaying">
+                            <i class="iconfont setplay" :class = "icofull"></i>
+                        </a>
+                        <a class="control-i-box" href="javascript:;"
+                            @click = "nextSong" >
+                            <i class="iconfont ico-next" ></i>
+                        </a>
+                        <a class="control-i-box" href="javascript:;">
+                            <i class="iconfont ico-not-favorite" ></i>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </transition>
+
         <!-- 播放底部控件 -->
-        <div class="min-player" 
-            @click = "open"
-        >
+        <div class="min-player"  @click = "open">
             <div class="play-img">
                 <img :src="actSong.image"
+                    alt=""
                     :class="{ anistop:!playing }">
             </div>
             <div class="play-msg">
@@ -73,26 +91,30 @@
                 </div>
             </div>
         </div>
+
+        <!-- 音乐播放 -->
         <audio :src = "actSong.url"
                 ref = "audio"
                 @timeupdate = "updateTime"
+                @ended = "nextSong"
         ></audio>
     </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState,mapActions,mapGetters,mapMutations } from 'vuex'
 export default {
     data(){
         return {
-            playing : true,
-            currentTime: 0,
-            fullScreen: false,
-            progressPrecent: 0,
+            playing : true,  //是否播放
+            currentTime: 0,  //播放时间
+            fullScreen: false, //是否全屏
+            progressPrecent: 0, //进度条
         }
     },
     computed: {
-        ...mapState(['nowSongList','actSong']),
+        ...mapState(['nowSongList','actSongIndex']),
+        ...mapGetters(['actSong']),
         iconMin() {
             return this.playing ? 'ico-playstop' : 'ico-playstar'
         },
@@ -116,6 +138,7 @@ export default {
         },
         actSong(newSong) {
             this.$nextTick(() => {
+                this.playing = true
                 this.$refs.audio.play()
             })
         },
@@ -128,13 +151,20 @@ export default {
     created(){
         this.touch = {};
     },
+    filters: {
+        forTime(num) {
+            num = parseInt(num);
+            let minute = parseInt(num / 60);
+            let second = num % 60
+            second = second < 10 ? `0${second}` : second
+            return `${minute}:${second}`
+        }
+    },
     methods: {
+        ...mapActions(['prevSong']),
+        ...mapMutations(['changeSong']),
         togglePlaying() {
-            if(this.playing){
-                this.playing = false
-            }else{
-                this.playing = true
-            }
+            this.playing ? this.playing = false : this.playing = true;
         },
         updateTime(e) {
             //音乐进度改变发生 改变时间进度
@@ -145,6 +175,14 @@ export default {
         },
         back() {
             this.fullScreen = false
+        },
+        prevSong() {
+            let index = this.actSongIndex - 1
+            this.changeSong(index)
+        },
+        nextSong() {
+            let index = this.actSongIndex + 1
+            this.changeSong(index)
         },
         progressTouchStart(e) {
             this.touch.initiated = true
@@ -257,18 +295,16 @@ export default {
                     max-width: 600px;
                     max-height: 600px;
                     animation:rotate 20s linear infinite both;
+                    border-radius: 50%;
+                    box-sizing: border-box;
+                    border:10px solid rgba(255,255,255,0.1);
                     &.anistop{
                         animation-play-state:paused;
                     }
                     .song-image{
-                        // position: absolute;
-                        // top:0;
-                        // left: 0;
-                        // width: 100%;
-                        // height: 100%;
+                        width: 100%;
+                        height: 100%;
                         border-radius: 50%;
-                        box-sizing: border-box;
-                        border:10px solid rgba(255,255,255,0.1);
                     }
                 }
             }
@@ -325,10 +361,42 @@ export default {
                 .control{
                     display: flex;
                     justify-content: center;
-                    .iconfont{
-                        color:@climport;
-                        font-size: 40px;
+                    align-items: center;
+                    .control-i-box{
+                        margin: 0 4%;
+                        .iconfont{
+                            color:@climport;
+                            font-size: 30px;
+                            &.ico-prev{
+                                transform: rotate(180deg);
+                                display: block;
+                            }
+                            &.setplay{
+                                font-size: 40px;
+                            }
+                        }
                     }
+                }
+            }
+            &.fullscreenani-enter-active,&.fullscreenani-leave-active{
+                transition: all .4s;
+                .full-top,.full-bottom{
+                    transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+                }
+                .cd-wrapper{
+                    transition: all .38s linear;
+                }
+            }
+            &.fullscreenani-enter,&.fullscreenani-leave-to{
+                opacity: 0;
+                .full-top{
+                    transform: translate3d(0,-100px,0);
+                }
+                .full-bottom{
+                    transform: translate3d(0,100px,0);
+                }
+                .cd-wrapper{
+                    transform:translate3d(-35%,119%,0) scale(.18);
                 }
             }
         }
